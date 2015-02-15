@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Board of directors feature.
+ */
+
+include_once 'board_of_directors.features.inc';
