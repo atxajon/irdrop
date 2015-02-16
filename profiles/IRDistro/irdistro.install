@@ -230,12 +230,23 @@ function install_welcome_submit($form, &$form_state) {
  * Task callback: returns the form allowing the user to choose what features are going to get installed
  */
 function irdistro_configure_form() {
-  //include_once DRUPAL_ROOT . '/includes/iso.inc';
+  include_once DRUPAL_ROOT . '/includes/iso.inc';
 
-  drupal_set_title(st('Configure features for your IR distro site'));
+  $features = features_get_features();
+  foreach ($features as $name => $module) {
 
+    //$description = isset($module->info['description']) ? check_plain($module->info['description']) : '';
 
-  $options = features_get_features();
+    $module_name[] = $module->info['name'];
+//    $form[$package]['status'][$name] = array(
+//      '#type' => 'checkbox',
+//      '#title' => $module_name,
+//      '#description' => $description,
+//      '#default_value' => $module->status,
+//      '#disabled' => $disabled,
+//    );
+  }
+
 
   $form['features'] = array(
     '#type' => 'fieldset',
@@ -245,21 +256,24 @@ function irdistro_configure_form() {
     '#type' => 'checkboxes',
     '#title' => st('What features do you want to install?'),
     '#description' => st('This is the list of features we have for you.'),
-    '#options' => $options,
+    '#options' => $module_name,
   );
 
-
-  $form['actions'] = array('#type' => 'actions');
-  $form['actions']['submit'] = array(
+  $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => st('Create and Finish'),
-    '#weight' => 15,
+    '#value' => st('Continue'),
   );
   return $form;
 }
 /**
- * Submit callback: creates the requested sample content.
+ * Submit handler for the features form.
  */
 function irdistro_configure_form_submit(&$form, &$form_state) {
-  //Todo
+//print_r($form_state);
+  $features = $form['features']['install_demo_features'];
+  if (!empty($features)) {
+    $status = $form_state['values']['status'];
+    $install = array_keys(array_filter($status));
+    features_install_modules($install);
+  }
 }
